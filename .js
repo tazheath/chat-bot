@@ -1,4 +1,4 @@
-const apiKey = "OPENAI_KEY";
+const apiKey = "OPENAI_API_KEY";
 
 async function sendMessage(message) {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
