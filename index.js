@@ -1,24 +1,17 @@
 const apiKey = "OPENAI_API_KEY";
 
 async function sendMessage(message) {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("https://chat-bot-mauve-seven-61.vercel.app/api/openai-proxy", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "You are a helpful website assistant." },
-        { role: "user", content: message }
-      ]
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
   });
 
   const data = await response.json();
-  return data.choices[0].message.content;
+
+  return data?.choices?.[0]?.message?.content || "Sorry, I didn't understand that.";
 }
+
 
 const toggleBtn = document.getElementById("chatbot-toggle");
 const chatWindow = document.getElementById("chatbot-window");
