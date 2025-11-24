@@ -1,24 +1,23 @@
 export const config = {
-  api: {
-    bodyParser: true,
-  },
+  api: { bodyParser: true },
 };
 
 export default async function handler(req, res) {
+  console.log(">>> Incoming request:", req.method, req.body);
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    // IMPORTANT: req.body is already parsed by Vercel
     const { message } = req.body;
 
     if (!message) {
-      return res.status(400).json({
-        error: "No message provided",
-        body: req.body
-      });
+      console.log("❌ No message provided:", req.body);
+      return res.status(400).json({ error: "No message provided", body: req.body });
     }
+
+    console.log(">>> Sending to OpenAI:", message);
 
     const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -37,17 +36,19 @@ export default async function handler(req, res) {
 
     const data = await apiRes.json();
 
-    if (!data.choices) {
-      return res.status(500).json({
-        error: "OpenAI returned no choices",
-        openaiResponse: data
+    console.log(">>> OPENAI RAW RESPONSE:", data);
+
+    if (!apiRes.ok) {
+      return res.status(apiRes.status).json({
+        error: "OpenAI error",
+        openai: data
       });
     }
 
     return res.status(200).json(data);
 
   } catch (err) {
-    console.error("Server error:", err);
+    console.error("❌ Server error:", err);
     return res.status(500).json({
       error: "Server error",
       details: err.message
