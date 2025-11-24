@@ -10,10 +10,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    // IMPORTANT: req.body is already parsed by Vercel
     const { message } = req.body;
 
     if (!message) {
-      return res.status(400).json({ error: "No message provided", body: req.body });
+      return res.status(400).json({
+        error: "No message provided",
+        body: req.body
+      });
     }
 
     const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -50,4 +54,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
